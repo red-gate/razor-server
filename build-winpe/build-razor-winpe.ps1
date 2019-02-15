@@ -15,7 +15,7 @@
 #   - allowunsigned: supply this to allow unsigned drivers to be injected
 #                    into the WinPE image
 param([String] $workdir, [Parameter(Mandatory=$true)][String] $razorurl,
-      [String] $driverdir, [switch] $allowunsigned)
+      [String] $driverdir, [switch] $allowunsigned, [ValidateSet('x86','amd64')][string]$architecture = 'amd64')
 $ErrorActionPreference = "Stop"
 
 function test-administrator {
@@ -79,7 +79,7 @@ foreach ($adkversion in $adkversions) {
     # we are stuck with just defaulting and failing.
     $adk = @([Environment]::GetFolderPath('ProgramFilesX86'),
              [Environment]::GetFolderPath('ProgramFiles')) |
-           % { join-path $_ "Windows Kits\$adkversion\Assessment and Deployment Kit\Windows Preinstallation Environment\amd64" } |
+           % { join-path $_ "Windows Kits\$adkversion\Assessment and Deployment Kit\Windows Preinstallation Environment\$architecture" } |
            ? { test-path  $_ } |
            select-object -First 1
     if ($adk -ne $null) { break }
@@ -92,7 +92,7 @@ the default location.
     exit 1
 }
 
-$env:PSModulePath = ($env:PSModulePath + ";$adk\..\..\Deployment Tools\amd64")
+$env:PSModulePath = ($env:PSModulePath + ";$adk\..\..\Deployment Tools\$architecture")
 
 # Path to the clean WinPE WIM file.
 $wim = join-path $adk "en-us\winpe.wim"
@@ -124,7 +124,7 @@ copy-item $wim (join-path $output "boot.wim") -ErrorAction Stop
 $wim = (join-path $output "boot.wim")
 
 
-$env:Path = ($env:Path + ";$adk\..\..\Deployment Tools\amd64\DISM")
+$env:Path = ($env:Path + ";$adk\..\..\Deployment Tools\$architecture\DISM")
 import-module dism -ErrorAction Stop
 
 write-host "* Mounting the wim image"
