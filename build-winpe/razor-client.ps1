@@ -28,10 +28,18 @@ if (test-path $configfile) {
 # Figure out our node hardware ID details, since we can't get at anything more
 # useful from our boot environment.  Sadly, rediscovery is the order of the
 # day here.  Damn WinPE.
-$hwid = get-wmiobject Win32_NetworkAdapter -filter "netenabled='true'" | `
-            select -expandproperty macaddress | `
-            foreach-object -begin { $n = 0 } -process { $n++; "net${n}=${_}"; }
-$hwid = $hwid -join '&' -replace ':', '-'
+while($hwid -eq $null) {
+    $hwid = get-wmiobject Win32_NetworkAdapter -filter "netenabled='true'" | `
+                select -expandproperty macaddress | `
+                foreach-object -begin { $n = 0 } -process { $n++; "net${n}=${_}"; }
+    $hwid = $hwid -join '&' -replace ':', '-'
+
+    if($hwid -eq $null) {
+        # something's wrong, wait a little bit and try again.
+        Write-Warning "Could not detect any network adapter. Waiting 3s before trying my luck again!"
+        Start-Sleep 3
+    }
+}
 
 # Now, communicate with the server and translate our HWID into a node ID
 # number that we can use for our next step -- accessing our bound
