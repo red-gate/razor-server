@@ -92,8 +92,6 @@ the default location.
     exit 1
 }
 
-$env:PSModulePath = ($env:PSModulePath + ";$adk\..\..\Deployment Tools\$architecture")
-
 # Path to the clean WinPE WIM file.
 $wim = join-path $adk "en-us\winpe.wim"
 
@@ -124,7 +122,6 @@ copy-item $wim (join-path $output "boot.wim") -ErrorAction Stop
 $wim = (join-path $output "boot.wim")
 
 
-$env:Path = ($env:Path + ";$adk\..\..\Deployment Tools\$architecture\DISM")
 import-module dism -ErrorAction Stop
 
 write-host "* Mounting the wim image"
