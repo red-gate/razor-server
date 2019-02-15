@@ -40,7 +40,7 @@ do {
                 foreach-object -begin { $n = 0 } -process { $n++; "net${n}=${_}"; }
     $hwid = $hwid -join '&' -replace ':', '-'
     $tries++
-} while($tries -lt 10 -and $hwid -eq $null)
+} while($tries -lt 10 -and [string]::IsNullOrEmpty($hwid))
 
 # Now, communicate with the server and translate our HWID into a node ID
 # number that we can use for our next step -- accessing our bound
