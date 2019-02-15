@@ -60,7 +60,7 @@ if ($driverdir -eq "") {
     $driverdir = (join-path $cwd "extra-drivers")
 }
 
-$output = join-path $workdir "razor-winpe"
+$output = join-path $workdir "razor-winpe-$architecture"
 $mount  = join-path $workdir "razor-winpe-mount"
 
 
